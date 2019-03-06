@@ -12,9 +12,9 @@ class Self_Attn(nn.Module):
         self.chanel_in = in_dim
         self.activation = activation
         
-        self.query_conv = nn.Conv2d(in_channels = in_dim , out_channels = in_dim//8 , kernel_size= 1)
-        self.key_conv = nn.Conv2d(in_channels = in_dim , out_channels = in_dim//8 , kernel_size= 1)
-        self.value_conv = nn.Conv2d(in_channels = in_dim , out_channels = in_dim , kernel_size= 1)
+        self.query_conv = nn.Conv2d(in_channels = in_dim , out_channels = in_dim//8 , kernel_size= 1)  # 1x1 Conv Q
+        self.key_conv = nn.Conv2d(in_channels = in_dim , out_channels = in_dim//8 , kernel_size= 1)  # 1x1 Conv K
+        self.value_conv = nn.Conv2d(in_channels = in_dim , out_channels = in_dim , kernel_size= 1)  # 1x1 Conv V
         self.gamma = nn.Parameter(torch.zeros(1))
 
         self.softmax  = nn.Softmax(dim=-1) #
@@ -33,7 +33,7 @@ class Self_Attn(nn.Module):
         attention = self.softmax(energy) # BX (N) X (N) 
         proj_value = self.value_conv(x).view(m_batchsize,-1,width*height) # B X C X N
 
-        out = torch.bmm(proj_value,attention.permute(0,2,1) )
+        out = torch.bmm(proj_value,attention.permute(0,2,1) )  # Engergy
         out = out.view(m_batchsize,C,width,height)
         
         out = self.gamma*out + x
